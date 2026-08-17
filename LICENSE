@@ -1,0 +1,21 @@
+# Copyright 62026 Brandon Reed & LoFi AI Studio Contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+=======================================================================
+                    NOTICE FILES / THIRD-PARTY SOFTWARE ATTRIBUTION
+
+This project includes materials subject to third-party licenses listed here:
+
+ - Ollama & llama.cpp server (text runtime) — Apache/MIT mix license  
+ - ComfyUI, A1111 WebUI (image/video runtimes) — MIT/BSD-2-Clause
+ - Qwen3 via wrapper service — See upstream project licenses in docs/credits.md 
+   and package.json dependency declarations under dependencies section listing all third-party libraries alongside internal monorepo workspace projects defined under apps/ and packages/ directories containing source code spanning multiple modules coordinated with team members assigned specific ownership responsibilities delineated clearly through role definition documents circulated among stakeholders for review purposes)  
+ - @google/model-viewer (dependencies: https://github.com/google/model-viewer/blob/main/LICENSE-OGL
+- Tailwind CSS, shadcn/ui, Radix UI primitives — MIT/BSD licenses listed under documentation section covering getting started guides plus API references ready for developers integrating third-party tools into existing infrastructure stacks
+
+For detailed attribution, see docs/credits.md.

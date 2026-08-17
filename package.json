@@ -1,0 +1,46 @@
+{
+  "name": "lofiaistudio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A unified dashboard for local AI model execution across text, image, video, and audio modalities",
+  "homepage": "https://lofiaistudio.com",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "setup": "npm run build --workspace=@lofiaistudio/shared",
+    "dev": "npm run setup && concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:web": "npm run dev --workspace=@lofiaistudio/web",
+    "dev:server": "npm run dev --workspace=@lofiaistudio/server",
+    "build": "npm run build --workspaces",
+    "lint": "eslint \"apps/*/src/**/*.{ts,tsx}\" \"packages/*/src/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^20.11.0",
+    "@types/supertest": "^7.2.1",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "jsdom": "^29.1.1",
+    "supertest": "^7.2.2",
+    "typescript": "^5.3.3",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Brandon Reed",
+  "license": "MIT",
+  "dependencies": {
+    "@google/model-viewer": "^4.3.1"
+  }
+}

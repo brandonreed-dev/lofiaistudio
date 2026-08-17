@@ -1,0 +1,2097 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   ORCHESTRATION DESIGN TOKENS
+   Direct hex tokens (used by .card, .stat, .chip, sidebar, etc.)
+   ============================================================ */
+
+/* Light theme (default) */
+:root {
+  --bg-0: #f5f7fb;
+  --bg-1: #ffffff;
+  --bg-2: #f0f2f5;
+  --bg-3: #e8eaef;
+  --bg-4: #d5d8df;
+  --border-c: #d1d5db;
+  --border-strong: #9ca3af;
+  --text-0: #111827;
+  --text-1: #374151;
+  --text-2: #6b7280;
+  --text-3: #9ca3af;
+  --accent: #7c5cff;
+  --accent-2: #00d4ff;
+  --accent-glow: rgba(124, 92, 255, 0.25);
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --pink: #ec4899;
+  --radius-orch: 10px;
+  --radius-sm-orch: 6px;
+  --radius-lg-orch: 16px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --transition: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark theme */
+:root.dark {
+  --bg-0: #0a0b10;
+  --bg-1: #0f1117;
+  --bg-2: #14171f;
+  --bg-3: #1a1e28;
+  --bg-4: #232834;
+  --border-c: #252a36;
+  --border-strong: #323847;
+  --text-0: #f5f7fb;
+  --text-1: #c8cdd9;
+  --text-2: #8b91a3;
+  --text-3: #5a6075;
+  --accent: #7c5cff;
+  --accent-2: #00d4ff;
+  --accent-glow: rgba(124, 92, 255, 0.4);
+  --green: #10b981;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --pink: #ec4899;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================
+   SHADCN HSL TOKENS — remapped to the orchestration palette so the
+   existing modality panels (Text/Image/Audio/Video, ModelSelector,
+   ExecutionModeToggle, etc.) inherit the dark aesthetic without any
+   per-component changes.
+   ============================================================ */
+@layer base {
+  :root {
+    --background: 230 22% 5%;
+    --foreground: 222 50% 97%;
+    --card: 226 22% 8%;
+    --card-foreground: 222 50% 97%;
+    --popover: 226 22% 8%;
+    --popover-foreground: 222 50% 97%;
+    --primary: 250 100% 68%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 224 18% 12%;
+    --secondary-foreground: 222 50% 97%;
+    --muted: 224 18% 12%;
+    --muted-foreground: 222 12% 60%;
+    --accent: 224 18% 14%;
+    --accent-foreground: 222 50% 97%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 224 18% 17%;
+    --input: 224 18% 14%;
+    --ring: 250 100% 68%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* Scrollbars (orchestration) */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-3);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+
+/* Cloud mode indicator (existing) */
+.cloud-mode-active {
+  @apply bg-cloud/10 border-cloud;
+}
+
+/* ============================================================
+   ORCHESTRATION COMPONENT CLASSES
+   Used directly by the new orchestration panels (Dashboard,
+   Agents, Workflows, Skills, Tasks). These re-implement the
+   reference HTML's class system inside the React app.
+   ============================================================ */
+
+/* App grid */
+.orch-app {
+  display: grid;
+  grid-template-columns: 252px 1fr;
+  grid-template-rows: 56px 1fr;
+  grid-template-areas: 'sidebar topbar' 'sidebar main';
+  height: 100vh;
+  background: var(--bg-0);
+  color: var(--text-0);
+}
+.orch-app.collapsed {
+  grid-template-columns: 64px 1fr;
+}
+
+/* Sidebar */
+.orch-sidebar {
+  grid-area: sidebar;
+  background: var(--bg-1);
+  border-right: 1px solid var(--border-c);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--transition);
+}
+.orch-sidebar-header {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-c);
+  flex-shrink: 0;
+}
+.orch-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 18px -4px var(--accent-glow);
+  color: white;
+}
+.orch-logo svg {
+  width: 18px;
+  height: 18px;
+}
+.orch-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.orch-brand .name {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+.orch-brand .tag {
+  font-size: 10px;
+  color: var(--text-2);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.orch-app.collapsed .orch-brand {
+  display: none;
+}
+
+.orch-ws {
+  margin: 12px;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.orch-ws:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-3);
+}
+.orch-ws-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #ec4899, #f59e0b);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+  flex-shrink: 0;
+}
+.orch-ws-info {
+  flex: 1;
+  min-width: 0;
+}
+.orch-ws-info .ws-name {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.orch-ws-info .ws-mode {
+  font-size: 10px;
+  color: var(--green);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.orch-ws-info .ws-mode::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+}
+.orch-app.collapsed .orch-ws {
+  padding: 6px;
+  justify-content: center;
+}
+.orch-app.collapsed .orch-ws-info,
+.orch-app.collapsed .orch-ws .chevron {
+  display: none;
+}
+
+.orch-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+.orch-nav-section {
+  margin-top: 14px;
+}
+.orch-nav-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0 12px 6px;
+}
+.orch-app.collapsed .orch-nav-section-title {
+  display: none;
+}
+.orch-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm-orch);
+  color: var(--text-1);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  margin: 1px 0;
+  position: relative;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+}
+.orch-nav-item:hover {
+  background: var(--bg-2);
+  color: var(--text-0);
+}
+.orch-nav-item.active {
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.18), rgba(124, 92, 255, 0.04));
+  color: var(--text-0);
+}
+.orch-nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.orch-nav-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.orch-nav-item .badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: var(--bg-3);
+  color: var(--text-1);
+  border-radius: 10px;
+}
+.orch-nav-item .badge.live {
+  background: var(--green);
+  color: white;
+}
+.orch-app.collapsed .orch-nav-item {
+  justify-content: center;
+  padding: 9px;
+}
+.orch-app.collapsed .orch-nav-item span:not(.badge),
+.orch-app.collapsed .orch-nav-item .badge {
+  display: none;
+}
+
+.orch-sidebar-footer {
+  border-top: 1px solid var(--border-c);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.orch-resource {
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.orch-app.collapsed .orch-resource {
+  display: none;
+}
+.orch-resource-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+}
+.orch-resource-row .label {
+  width: 30px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+.orch-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--bg-4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.orch-bar .fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 600ms;
+}
+.orch-resource-row .val {
+  color: var(--text-1);
+  font-weight: 600;
+  min-width: 36px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.fill-cpu {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+.fill-gpu {
+  background: linear-gradient(90deg, var(--pink), var(--accent));
+}
+.fill-ram {
+  background: linear-gradient(90deg, var(--green), var(--accent-2));
+}
+.fill-vram {
+  background: linear-gradient(90deg, var(--amber), var(--pink));
+}
+
+.orch-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: var(--radius-orch);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.orch-user:hover {
+  background: var(--bg-2);
+}
+.orch-user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00d4ff, #7c5cff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+.orch-user-info {
+  flex: 1;
+  min-width: 0;
+}
+.orch-user-info .name {
+  font-weight: 600;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.orch-user-info .plan {
+  font-size: 10.5px;
+  color: var(--text-2);
+}
+.orch-app.collapsed .orch-user-info {
+  display: none;
+}
+
+/* Topbar */
+.orch-topbar {
+  grid-area: topbar;
+  background: var(--bg-1);
+  border-bottom: 1px solid var(--border-c);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 14px;
+}
+.orch-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.orch-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm-orch);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-1);
+  transition: var(--transition);
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.orch-icon-btn:hover {
+  background: var(--bg-3);
+  color: var(--text-0);
+}
+.orch-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.orch-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.orch-crumbs .sep {
+  color: var(--text-3);
+}
+.orch-crumbs .current {
+  color: var(--text-0);
+  font-weight: 600;
+}
+
+.orch-search {
+  flex: 1;
+  max-width: 520px;
+  margin-left: auto;
+  position: relative;
+}
+.orch-search input {
+  width: 100%;
+  height: 34px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  padding: 0 36px 0 36px;
+  color: var(--text-0);
+  outline: none;
+  transition: var(--transition);
+}
+.orch-search input:focus {
+  border-color: var(--accent);
+  background: var(--bg-3);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.15);
+}
+.orch-search input::placeholder {
+  color: var(--text-3);
+}
+.orch-search > svg {
+  position: absolute;
+  left: 11px;
+  top: 9px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+}
+.orch-kbd {
+  position: absolute;
+  right: 8px;
+  top: 7px;
+  font-size: 10.5px;
+  color: var(--text-3);
+  background: var(--bg-3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-c);
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+}
+.orch-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.orch-notif-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  background: var(--red);
+  border-radius: 50%;
+  border: 2px solid var(--bg-1);
+}
+
+/* Buttons */
+.orch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm-orch);
+  font-size: 13px;
+  font-weight: 600;
+  transition: var(--transition);
+  background: var(--bg-3);
+  color: var(--text-0);
+  border: 1px solid var(--border-c);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.orch-btn:hover {
+  background: var(--bg-4);
+  border-color: var(--border-strong);
+}
+.orch-btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: 0 0 14px -4px var(--accent-glow);
+}
+.orch-btn.primary:hover {
+  background: #8c6cff;
+}
+.orch-btn.ghost {
+  background: transparent;
+  border-color: transparent;
+}
+.orch-btn.ghost:hover {
+  background: var(--bg-3);
+}
+.orch-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.orch-btn.sm {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+.orch-btn.xs {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+/* Main */
+.orch-main {
+  grid-area: main;
+  overflow-y: auto;
+  background: var(--bg-0);
+  position: relative;
+}
+.orch-view {
+  padding: 24px 28px 48px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+.orch-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.orch-view-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.orch-view-subtitle {
+  color: var(--text-2);
+  font-size: 13.5px;
+  margin-top: 2px;
+}
+.orch-view-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Subtabs */
+.orch-subtabs {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border-c);
+  margin-bottom: 20px;
+}
+.orch-subtab {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition);
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.orch-subtab:hover {
+  color: var(--text-0);
+}
+.orch-subtab.active {
+  color: var(--text-0);
+  border-bottom-color: var(--accent);
+}
+.orch-subtab .count {
+  background: var(--bg-3);
+  color: var(--text-2);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Cards */
+.orch-card {
+  background: var(--bg-1);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  transition: var(--transition);
+}
+.orch-card:hover {
+  border-color: var(--border-strong);
+}
+.orch-card-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-c);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.orch-card-title {
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.orch-card-title svg {
+  width: 14px;
+  height: 14px;
+  color: var(--text-2);
+}
+.orch-card-body {
+  padding: 16px;
+}
+.orch-card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Grid helpers */
+.orch-grid {
+  display: grid;
+  gap: 14px;
+}
+.orch-grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.orch-grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.orch-grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.orch-grid-2-1 {
+  grid-template-columns: 2fr 1fr;
+}
+@media (max-width: 1100px) {
+  .orch-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .orch-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .orch-grid-2-1 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 700px) {
+  .orch-grid-4,
+  .orch-grid-3,
+  .orch-grid-2 {
+    grid-template-columns: 1fr;
+  }
+  .orch-app {
+    grid-template-columns: 0 1fr;
+  }
+  .orch-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 252px;
+    z-index: 100;
+    transform: translateX(-100%);
+  }
+  .orch-sidebar.open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+/* Stat cards */
+.orch-stat {
+  background: var(--bg-1);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+.orch-stat:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.orch-stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--bar-color, var(--accent));
+  opacity: 0.7;
+}
+.orch-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.orch-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--icon-bg, rgba(124, 92, 255, 0.12));
+  color: var(--icon-color, var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.orch-stat-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.orch-stat-trend {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.orch-stat-trend.up {
+  color: var(--green);
+  background: rgba(16, 185, 129, 0.1);
+}
+.orch-stat-trend.down {
+  color: var(--red);
+  background: rgba(239, 68, 68, 0.1);
+}
+.orch-stat-value {
+  font-size: 26px;
+  font-weight: 700;
+  margin-top: 12px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.orch-stat-label {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+.orch-spark {
+  margin-top: 10px;
+  height: 32px;
+  width: 100%;
+  display: block;
+}
+
+/* List rows */
+.orch-list {
+  display: flex;
+  flex-direction: column;
+}
+.orch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-c);
+  transition: var(--transition);
+  cursor: pointer;
+}
+.orch-row:last-child {
+  border-bottom: none;
+}
+.orch-row:hover {
+  background: var(--bg-2);
+}
+.orch-row-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-1);
+}
+.orch-row-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.orch-row-main {
+  flex: 1;
+  min-width: 0;
+}
+.orch-row-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.orch-row-sub {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.orch-row-meta {
+  color: var(--text-2);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Chips */
+.orch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--bg-3);
+  color: var(--text-1);
+  border: 1px solid var(--border-c);
+}
+.orch-chip.green {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--green);
+  border-color: rgba(16, 185, 129, 0.2);
+}
+.orch-chip.amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--amber);
+  border-color: rgba(245, 158, 11, 0.2);
+}
+.orch-chip.red {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--red);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+.orch-chip.blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--blue);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+.orch-chip.purple {
+  background: rgba(124, 92, 255, 0.12);
+  color: var(--accent);
+  border-color: rgba(124, 92, 255, 0.2);
+}
+.orch-chip.pink {
+  background: rgba(236, 72, 153, 0.12);
+  color: var(--pink);
+  border-color: rgba(236, 72, 153, 0.2);
+}
+.orch-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+.orch-dot.pulse {
+  animation: orch-pulse 1.6s ease-in-out infinite;
+  box-shadow: 0 0 8px currentColor;
+}
+@keyframes orch-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Inputs */
+.orch-input,
+.orch-select,
+.orch-textarea {
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  padding: 8px 10px;
+  color: var(--text-0);
+  outline: none;
+  transition: var(--transition);
+  font-size: 13px;
+  width: 100%;
+  font-family: inherit;
+}
+.orch-input:focus,
+.orch-select:focus,
+.orch-textarea:focus {
+  border-color: var(--accent);
+  background: var(--bg-3);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.15);
+}
+
+/* Filter bar */
+.orch-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.orch-filter .orch-input {
+  width: 240px;
+  height: 32px;
+}
+.orch-filter .orch-select {
+  width: auto;
+  height: 32px;
+}
+
+/* Toggle */
+.orch-toggle {
+  width: 34px;
+  height: 19px;
+  background: var(--bg-4);
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+}
+.orch-toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 15px;
+  height: 15px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+.orch-toggle.on {
+  background: var(--accent);
+}
+.orch-toggle.on::after {
+  left: 17px;
+}
+
+/* Settings rows */
+.orch-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-c);
+  gap: 16px;
+}
+.orch-setting-row:last-child {
+  border-bottom: none;
+}
+.orch-setting-meta {
+  flex: 1;
+  min-width: 0;
+}
+.orch-setting-title {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.orch-setting-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  margin-top: 2px;
+}
+
+/* Workflow canvas */
+.orch-canvas {
+  background: var(--bg-1);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  height: 480px;
+  position: relative;
+  overflow: hidden;
+  background-image: radial-gradient(circle, var(--border-c) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+}
+.orch-wf-toolbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  gap: 4px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  padding: 4px;
+  border-radius: var(--radius-sm-orch);
+  z-index: 5;
+  backdrop-filter: blur(8px);
+}
+.orch-wf-toolbar .orch-icon-btn {
+  width: 28px;
+  height: 28px;
+}
+.orch-wf-zoom {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text-2);
+  font-family: 'JetBrains Mono', monospace;
+  z-index: 5;
+}
+.orch-wf-mini {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: 160px;
+  height: 100px;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  z-index: 5;
+}
+.orch-node {
+  position: absolute;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 10px;
+  width: 180px;
+  font-size: 12px;
+  box-shadow: var(--shadow-md);
+  cursor: move;
+  user-select: none;
+}
+.orch-node:hover {
+  border-color: var(--accent);
+}
+.orch-node.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.2);
+}
+.orch-node-head {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-c);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+  background: var(--bg-3);
+  border-radius: 8px 8px 0 0;
+  color: white;
+}
+.orch-node-head.input {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+.orch-node-head.skill {
+  background: linear-gradient(135deg, #7c5cff, #6d4dff);
+}
+.orch-node-head.model {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+.orch-node-head.output {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.orch-node-head.logic {
+  background: linear-gradient(135deg, #00d4ff, #0891b2);
+}
+.orch-node-head svg {
+  width: 12px;
+  height: 12px;
+}
+.orch-node-body {
+  padding: 8px 10px;
+  color: var(--text-1);
+  font-size: 11.5px;
+}
+.orch-node-port {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-4);
+  border: 2px solid var(--border-strong);
+}
+.orch-node-port.in {
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.orch-node-port.out {
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.orch-wires {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+.orch-wires path {
+  stroke: var(--accent);
+  stroke-width: 2;
+  fill: none;
+  opacity: 0.6;
+}
+
+/* Persona avatar */
+.orch-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  font-size: 16px;
+  position: relative;
+}
+.orch-avatar::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--green);
+  border: 2px solid var(--bg-1);
+}
+.orch-avatar.idle::after {
+  background: var(--text-3);
+}
+.orch-avatar.busy::after {
+  background: var(--amber);
+}
+
+/* Tables */
+.orch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.orch-table thead th {
+  text-align: left;
+  padding: 10px 14px;
+  font-weight: 600;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border-c);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.orch-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-c);
+  vertical-align: middle;
+}
+.orch-table tbody tr:hover {
+  background: var(--bg-2);
+}
+.orch-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Activity feed */
+.orch-activity {
+  display: flex;
+  gap: 11px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-c);
+}
+.orch-activity:last-child {
+  border-bottom: none;
+}
+.orch-activity-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-2);
+}
+.orch-activity-dot svg {
+  width: 12px;
+  height: 12px;
+}
+.orch-activity-content {
+  flex: 1;
+  font-size: 13px;
+}
+.orch-activity-time {
+  color: var(--text-3);
+  font-size: 11.5px;
+  margin-top: 2px;
+}
+
+/* Segmented */
+.orch-segmented {
+  display: inline-flex;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  padding: 2px;
+}
+.orch-segmented button {
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-2);
+  border-radius: 4px;
+  transition: var(--transition);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.orch-segmented button.active {
+  background: var(--bg-4);
+  color: var(--text-0);
+}
+
+/* Banner */
+.orch-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(124, 92, 255, 0.08), rgba(0, 212, 255, 0.04));
+  border: 1px solid rgba(124, 92, 255, 0.25);
+  border-radius: var(--radius-orch);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.orch-banner-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(124, 92, 255, 0.15);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.orch-banner-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.orch-banner-text {
+  flex: 1;
+}
+
+/* Cron heatmap */
+.orch-cron-grid {
+  display: grid;
+  grid-template-columns: repeat(24, 1fr);
+  gap: 2px;
+}
+.orch-cron-cell {
+  height: 14px;
+  border-radius: 2px;
+  background: var(--bg-3);
+}
+.orch-cron-cell.l1 {
+  background: rgba(124, 92, 255, 0.3);
+}
+.orch-cron-cell.l2 {
+  background: rgba(124, 92, 255, 0.55);
+}
+.orch-cron-cell.l3 {
+  background: rgba(124, 92, 255, 0.85);
+}
+
+/* Model tile */
+.orch-model {
+  background: var(--bg-1);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-orch);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: var(--transition);
+}
+.orch-model:hover {
+  border-color: var(--accent);
+}
+.orch-model-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.orch-model-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+}
+.orch-model-meta {
+  flex: 1;
+  min-width: 0;
+}
+.orch-model-name {
+  font-weight: 600;
+  font-size: 13.5px;
+}
+.orch-model-author {
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+.orch-model-desc {
+  font-size: 12.5px;
+  color: var(--text-1);
+  line-height: 1.45;
+  min-height: 36px;
+}
+.orch-model-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 11.5px;
+  color: var(--text-2);
+  padding-top: 10px;
+  border-top: 1px solid var(--border-c);
+}
+.orch-model-stats span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Code inline */
+.orch-code {
+  background: var(--bg-3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--text-1);
+}
+
+/* ============================================================
+   REACT FLOW CUSTOM THEMING
+   ============================================================ */
+.react-flow {
+  background: var(--bg-1) !important;
+  background-image: radial-gradient(circle, var(--border-c) 1px, transparent 1px) !important;
+  background-size: 20px 20px !important;
+}
+.react-flow__background {
+  background: transparent !important;
+}
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-4);
+  border: 2px solid var(--border-strong);
+  transition: var(--transition);
+}
+.react-flow__handle:hover {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+.react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0.6;
+  transition: var(--transition);
+}
+.react-flow__edge.selected .react-flow__edge-path,
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: var(--accent-2);
+  opacity: 1;
+  stroke-width: 2.5;
+}
+.react-flow__edge.animated path {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+@keyframes dashdraw {
+  from { stroke-dashoffset: 10; }
+  to { stroke-dashoffset: 0; }
+}
+.react-flow__handle-connecting {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.react-flow__handle-valid {
+  background: var(--green);
+  border-color: var(--green);
+}
+.react-flow__selection {
+  background: rgba(124, 92, 255, 0.08);
+  border: 1px solid var(--accent);
+}
+.react-flow__minimap {
+  background: var(--bg-2) !important;
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+}
+.react-flow__minimap-mask {
+  fill: rgba(0, 0, 0, 0.35);
+}
+.react-flow__minimap-node {
+  fill: var(--bg-4);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+}
+.react-flow__controls {
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.react-flow__controls-button {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--border-c);
+  color: var(--text-1);
+  fill: var(--text-1);
+  width: 28px;
+  height: 28px;
+  transition: var(--transition);
+}
+.react-flow__controls-button:hover {
+  background: var(--bg-3);
+  color: var(--text-0);
+  fill: var(--text-0);
+}
+.react-flow__controls-button:last-child {
+  border-bottom: none;
+}
+.react-flow__attribution {
+  display: none;
+}
+
+/* Command palette, drawer, toast, and persona chat */
+.orch-modal-overlay,
+.orch-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 80;
+}
+
+.orch-cmdk {
+  position: fixed;
+  top: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - 32px));
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-orch);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.orch-cmdk-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border-c);
+}
+
+.orch-cmdk-head > svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-2);
+}
+
+.orch-cmdk-head input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  color: var(--text-0);
+}
+
+.orch-cmdk-list {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.orch-cmdk-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm-orch);
+  color: var(--text-1);
+}
+
+.orch-cmdk-item:hover {
+  background: var(--bg-3);
+  color: var(--text-0);
+}
+
+.orch-cmdk-item small,
+.orch-empty {
+  color: var(--text-3);
+}
+
+.orch-empty {
+  padding: 28px;
+  text-align: center;
+}
+
+.orch-drawer-overlay {
+  z-index: 90;
+}
+
+.orch-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(420px, 100vw);
+  background: var(--bg-1);
+  border-left: 1px solid var(--border-c);
+  z-index: 91;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.orch-drawer-header,
+.orch-drawer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-c);
+}
+
+.orch-drawer-foot {
+  border-top: 1px solid var(--border-c);
+  border-bottom: 0;
+  margin-top: auto;
+}
+
+.orch-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.orch-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orch-field span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.orch-check-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orch-check-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  background: var(--bg-2);
+}
+
+.orch-check-row input {
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.orch-check-row span {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.orch-check-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.orch-check-row small {
+  flex-shrink: 0;
+  color: var(--text-2);
+  font-size: 11px;
+}
+
+.orch-empty.compact {
+  padding: 14px;
+  border: 1px dashed var(--border-c);
+  border-radius: var(--radius-sm-orch);
+}
+
+.orch-toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 120;
+}
+
+.orch-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  max-width: 360px;
+  padding: 10px 12px;
+  border-radius: var(--radius-orch);
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  color: var(--text-0);
+  box-shadow: var(--shadow-md);
+  text-align: left;
+}
+
+.orch-toast-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.16);
+  color: var(--green);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.orch-toast-icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+.orch-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 76px;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: white;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-lg);
+  z-index: 70;
+}
+
+.orch-fab.open {
+  transform: translateY(-4px);
+}
+
+.orch-fab svg {
+  width: 21px;
+  height: 21px;
+}
+
+.orch-chat-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 136px;
+  width: min(380px, calc(100vw - 36px));
+  height: min(560px, calc(100vh - 170px));
+  background: var(--bg-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-orch);
+  box-shadow: var(--shadow-lg);
+  z-index: 75;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.orch-chat-head {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-c);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.orch-chat-person {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orch-chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  object-fit: cover;
+}
+
+.orch-chat-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.orch-chat-meta strong {
+  font-size: 13px;
+}
+
+.orch-chat-meta span {
+  overflow: hidden;
+  color: var(--text-2);
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.orch-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.orch-chat-msg {
+  max-width: 82%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+
+.orch-chat-msg.them {
+  align-self: flex-start;
+  background: var(--bg-3);
+  color: var(--text-1);
+}
+
+.orch-chat-msg.you {
+  align-self: flex-end;
+  background: var(--accent);
+  color: white;
+}
+
+.orch-chat-error {
+  align-self: center;
+  max-width: 90%;
+  padding: 8px 10px;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  border-radius: var(--radius-sm-orch);
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--red);
+  font-size: 12px;
+}
+
+.orch-chat-input {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--border-c);
+}
+
+.orch-chat-input textarea {
+  flex: 1;
+  min-height: 38px;
+  max-height: 90px;
+  resize: vertical;
+  background: var(--bg-2);
+  border: 1px solid var(--border-c);
+  border-radius: var(--radius-sm-orch);
+  color: var(--text-0);
+  padding: 8px 10px;
+  outline: 0;
+}
+
+/* ============================================================
+   CHAT PLATFORM SPECIFIC STYLES
+   Voice button, reactions, enhanced message bubbles, etc.
+   ============================================================ */
+
+/* Voice button */
+.orch-voice-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border-c);
+  background: var(--bg-2);
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.orch-voice-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-3);
+}
+
+.orch-voice-btn.recording {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(239, 68, 68, 0.1);
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+/* Spinning animation for loading states */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Message hover actions */
+.orch-msg-group {
+  transition: box-shadow var(--transition);
+}
+
+.orch-msg-group:hover {
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Context document chips */
+.orch-context-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.orch-context-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--bg-3);
+  border-radius: 6px;
+  font-size: 12px;
+  border: 1px solid var(--border-c);
+  transition: var(--transition);
+}
+
+.orch-context-chip:hover {
+  border-color: var(--accent);
+}
+
+/* Parameters panel scrollable */
+.orch-params-panel {
+  height: fit-content;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* Enhanced scrollbar for chat messages */
+.orch-chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.orch-chat-messages::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+/* Memory config section */
+.orch-memory-section {
+  border-top: 1px solid var(--border-c);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+
+.orch-memory-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+/* Session history list */
+.orch-history-card {
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  .orch-search {
+    display: none;
+  }
+
+  .orch-view-header {
+    flex-direction: column;
+  }
+
+  .orch-view-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,27 @@
+project.roadmap.txt
+Author: Brandon Reed
+
+version 0.0.0 - Prototype / Proof of Concept Milestone **Complete**
+Build out a basic prototype that allows the use of multiple models types (Text, Audio, Image, Video)
+
+version 0.1.0 - MVP / Minimum Viable Product **Ongoing**
+Expand the functionality to be a basic MVP.
+
+version 0.2.0 - Foundation **Upcoming**
+The setting of Foundation Items like File Structure, Naming Conventions, Code Patterns, Accessibility, Auth, etc.
+Changing from 3rd party defaults to built in defaults (IE having local inference with the option of using Ollama, rather than needing Ollama/ComfyUI/etc.)
+
+version 0.3.0 - Community Features **Upcoming**
+Saving, Importing/Exporting, and Sharing of Prompts, Templates, Workflows, etc.
+Basic Socials functionality for Inbox, Posts, Issues, etc.
+
+version 0.4.0 - Business/Enterprise Features **Upcoming**
+Basic Business functionality for Reporting, Users, etc.
+Additional Observability and Compliance features. 
+
+version 0.5.0 - Additional Features **Upcoming**
+Any additional features.
+
+...
+
+version 1.0.0 - Full Release

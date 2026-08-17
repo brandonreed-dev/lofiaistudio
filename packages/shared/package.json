@@ -1,0 +1,27 @@
+{
+  "name": "@lofiaistudio/shared",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://lofiaistudio.com",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "check:responses": "npm run build && node check-response-converters.mjs",
+    "test": "vitest run --dir src",
+    "test:watch": "vitest --dir src",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
