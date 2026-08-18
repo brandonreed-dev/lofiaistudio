@@ -47,7 +47,7 @@ export function LicensePanel() {
                 </svg>
                 Patreon
               </a>
-              {/* <a
+              <a
                 href="https://buymeacoffee.com/brandonreeg"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -59,7 +59,7 @@ export function LicensePanel() {
                   <path d="M8 7.5V5c0-1.1.9-2 2-2h4a2 2 0 0 1 2 2v2.5" />
                 </svg>
                 Buy Me a Coffee
-              </a> */}
+              </a>
               <a
                 href="https://www.paypal.me/brandonreeddev"
                 target="_blank"
